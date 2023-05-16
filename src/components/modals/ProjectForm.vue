@@ -44,10 +44,11 @@ export default {
 .modal {
   background: #243447;
   border-radius: 5px;
-  overflow-x: auto;
+  overflow: auto;
   display: flex;
   flex-direction: column;
-  width: 50%;
+  width: 800px;
+  height: 90vh; 
 }
 
 .modal-header {

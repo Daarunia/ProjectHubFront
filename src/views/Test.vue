@@ -18,11 +18,19 @@
           </div>
           <div>
             <label for="start_date">Start date</label>
-            <input type="date" id="start_date" v-model="form.start_date" />
+            <VueDatePicker
+              id="start_date"
+              class="input"
+              v-model="form.start_date"
+            ></VueDatePicker>
           </div>
           <div>
-            <label for="end_date">End Date</label>
-            <input type="date" id="end_date" v-model="form.end_date" />
+            <label for="end_sate">End date</label>
+            <VueDatePicker
+              id="end_date"
+              class="input"
+              v-model="form.end_date"
+            ></VueDatePicker>
           </div>
           <div>
             <label for="etat">État</label>
@@ -36,7 +44,7 @@
       </template>
       <template v-slot:footer>
         <div class="modal-footer">
-          <button type="submit">Save</button>
+          <button type="submit" @click="submitForm">Save</button>
           <button type="button" @click="closeModal">Cancel</button>
         </div>
       </template>
@@ -45,11 +53,37 @@
 </template>
 
 <style>
+.dp__input {
+  display: flex;
+  border: 1px solid;
+  color: white;
+  border-color: grey;
+  border-radius: 5px;
+  width: 705px;
+  height: 60px;
+  font-size: 14px;
+  margin-bottom: 10px;
+  background-color: #243447;
+}
+
+.db_input:hover {
+  border-color: white;
+}
+
+textarea {
+  resize: vertical;
+}
+
 .project-form {
   display: flex;
-  justify-content: center;
-  align-items: center;
+  flex-wrap: wrap;
+  align-content: center;
   flex-direction: column;
+}
+
+date-picker {
+  display: flex;
+  align-content: center;
 }
 
 .modal-footer {
@@ -60,12 +94,18 @@
 }
 
 label {
+  padding: 3px;
   color: #aab8c2;
   display: block;
 }
 
+date-picker {
+  display: flex;
+}
+
 input,
-textarea {
+textarea,
+.input {
   border: 1px solid;
   color: white;
   border-color: grey;
@@ -77,7 +117,8 @@ textarea {
   background-color: #243447;
 }
 
-input:focus, textarea:focus {
+input:focus,
+textarea:focus {
   outline: none;
 }
 
@@ -99,8 +140,12 @@ button {
   padding: 10px;
 }
 </style>
+
 <script>
 import ProjectForm from "../components/modals/ProjectForm.vue";
+import VueDatePicker from "@vuepic/vue-datepicker";
+import "@vuepic/vue-datepicker/dist/main.css";
+import axios from "axios";
 
 export default {
   props: {
@@ -112,6 +157,7 @@ export default {
   name: "App",
   components: {
     ProjectForm,
+    VueDatePicker,
   },
   data() {
     return {
@@ -119,8 +165,8 @@ export default {
       form: {
         name: "",
         description: "",
-        start_date: "",
-        end_date: "",
+        start_date: null,
+        end_date: null,
         etat: "",
         responsible: "",
       },
@@ -133,19 +179,27 @@ export default {
     closeModal() {
       this.isModalVisible = false;
     },
-    submitForm() {
-      console.log(this.form);
-      this.resetForm();
-    },
     resetForm() {
       this.form = {
         name: "",
         description: "",
-        start_date: "",
-        end_date: "",
+        start_date: new Date(),
+        end_date: new Date(),
         etat: "",
         responsible: "",
       };
+    },
+    submitForm() {
+      axios
+        .post("http://127.0.0.1:8000/api/projects", this.form)
+        .then((response) => {
+          console.log(response);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+      this.resetForm();
+      this.closeModal();
     },
   },
 };
